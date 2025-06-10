@@ -1,6 +1,4 @@
 
-const RET_ADDRESS_REG: usize = 0x000008;
-
 pub struct RomBuilder {
     rom: Vec<u8>,
     program_counter: usize,
@@ -55,6 +53,7 @@ impl RomBuilder {
         self.write_u24(jump as u32);
     }
 
+    /// No operation
     pub fn nop(&mut self) {
         self.write_u24(0x000000);
         self.write_u24(0x000000);
@@ -62,12 +61,24 @@ impl RomBuilder {
         self.write_u24(next_addr);
     }
 
+    /// Wait until next frame
+    /// This is used to synchronize with the frame rate of the game
+    /// Program counter needs to be programmed before calling this function
+    pub fn wait(&mut self) {
+        self.write_u24(0x000000);
+        self.write_u24(0x000000);
+        let next_addr = self.get_current_addr() as u32;
+        self.write_u24(next_addr);
+    }
+
+    /// Unconditional jump to provided address
     pub fn jmp(&mut self, addr: usize) {
         self.write_u24(0x000000);
         self.write_u24(0x000000);
         self.write_u24(addr as u32);
     }
 
+    
     pub fn cpy(&mut self, source: usize, target: usize) {
         self.write_u24(source as u32);
         self.write_u24(target as u32);
