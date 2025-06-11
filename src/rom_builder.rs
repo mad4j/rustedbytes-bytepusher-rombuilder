@@ -1,4 +1,3 @@
-
 pub struct RomBuilder {
     rom: Vec<u8>,
     program_counter: usize,
@@ -43,6 +42,17 @@ impl RomBuilder {
         self.program_counter += 1;
     }
 
+    pub fn init_regs(&mut self, keyb_flags: u16, program_addr: usize, audio_addr: usize, screen_addr: usize) {  
+        self.write_u16(keyb_flags);
+        self.write_u24(program_addr as u32);
+        self.write_u24(audio_addr as u32);
+        self.write_u24(screen_addr as u32);
+    }
+
+    pub fn label(&self) -> usize {
+        self.program_counter
+    }
+
     pub fn org(&mut self, addr: usize) {
         self.program_counter = addr;
     }
@@ -78,13 +88,22 @@ impl RomBuilder {
         self.write_u24(addr as u32);
     }
 
-    
     pub fn cpy(&mut self, source: usize, target: usize) {
         self.write_u24(source as u32);
         self.write_u24(target as u32);
         let next_addr = self.get_next_addr() as u32;
         self.write_u24(next_addr);
+    }
 
+    pub fn db(&mut self, data: &[u8]) {
+        let addr = self.get_current_addr();
+        self.rom[addr..addr + data.len()].copy_from_slice(data);
+        self.program_counter += data.len();
+    }
+
+    pub fn dbb(&mut self, data: u8) {
+        self.write_u8(data);
+        self.program_counter += 1;
     }
 
 }

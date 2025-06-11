@@ -1,4 +1,3 @@
-
 /// Errori che possono verificarsi durante l'elaborazione
 #[derive(Debug)]
 pub enum BytePusherError {
