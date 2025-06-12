@@ -18,11 +18,13 @@ fn main() {
     rm.org(AUDIO_START);
     rm.db(&[0; 256]);
 
+    // Generate random pixels
     rm.org(SCREEN_START);
     for _ in 0..65536 {
         rm.dbb(rand::random::<u8>() % 217);
     }
 
-    rm.save_to_file("roms/RandomPattern.ButePusher")
+    // Save the ROM file on disk
+    rm.save_to_file("roms/RandomPattern.BytePusher")
         .expect("Failed to save ROM file");
 }
