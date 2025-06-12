@@ -42,12 +42,17 @@ impl RomBuilder {
     }
 
     pub fn write_u24(&mut self, value: u32) {
-        self.rom.extend_from_slice(&value.to_be_bytes()[1..]);
+        let addr = self.program_counter;
+        self.rom[addr] = ((value & 0xFF0000)>> 16) as u8;
+        self.rom[addr + 1] = ((value & 0xFF00) >> 8) as u8;
+        self.rom[addr + 2] = (value & 0xFF) as u8;
         self.program_counter += 3;
     }
 
     pub fn write_u16(&mut self, value: u16) {
-        self.rom.extend_from_slice(&value.to_be_bytes());
+        let addr = self.program_counter;
+        self.rom[addr] = ((value & 0xFF00) >> 8) as u8;
+        self.rom[addr + 1] = (value & 0xFF) as u8;
         self.program_counter += 2;
     }
 
@@ -65,8 +70,8 @@ impl RomBuilder {
     ) {
         self.write_u16(keyb_flags);
         self.write_u24(program_addr as u32);
-         self.write_u16((screen_addr >> 8) as u16);
-        self.write_u8((audio_addr >> 16) as u8);
+        self.write_u8((screen_addr >> 16) as u8);
+        self.write_u16((audio_addr >> 8) as u16);
     }
 
     pub fn label(&self) -> usize {
@@ -109,9 +114,9 @@ impl RomBuilder {
     }
 
     pub fn cpy(&mut self, source: usize, target: usize) {
+        let next_addr = self.get_next_addr() as u32;
         self.write_u24(source as u32);
         self.write_u24(target as u32);
-        let next_addr = self.get_next_addr() as u32;
         self.write_u24(next_addr);
     }
 

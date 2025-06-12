@@ -5,7 +5,7 @@ fn main() {
 
     const PROGRAM_START: usize = 0x000100;
     const AUDIO_START: usize = 0x00FF00;
-    const SCREEN_START: usize = 0x001000;
+    const SCREEN_START: usize = 0x010000;
 
     // Initialize registers
     rm.init_regs(0x0000, PROGRAM_START, SCREEN_START, AUDIO_START);
