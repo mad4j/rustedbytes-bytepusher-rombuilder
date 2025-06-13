@@ -11,12 +11,10 @@ fn main() {
     rm.init_regs(0x0000, PROGRAM_START, SCREEN_START, AUDIO_START);
 
     // ROM logic
-    rm.org(PROGRAM_START);
-    rm.wait();
+    rm.org(PROGRAM_START).wait();
 
     // No sound dummy samples
-    rm.org(AUDIO_START);
-    rm.db(&[0; 256]);
+    rm.org(AUDIO_START).db(&[0; 256]);
 
     // Generate random pixels
     rm.org(SCREEN_START);
