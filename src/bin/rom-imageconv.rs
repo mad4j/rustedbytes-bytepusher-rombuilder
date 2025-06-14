@@ -1,4 +1,5 @@
 use clap::Parser;
+use image::RgbImage;
 use rustedbytes_bytepusher_rombuilder::{
     image::convert_image_dithered_strength, rom_builder::RomBuilder,
 };
@@ -17,6 +18,10 @@ struct Args {
     /// Output ROM file path (default: <image>.BytePusher)
     #[arg(short, long)]
     output: Option<String>,
+
+    /// Salva una preview PNG dell'immagine convertita (BytePusher)
+    #[arg(long)]
+    preview: Option<String>,
 }
 
 fn main() {
@@ -58,4 +63,26 @@ fn main() {
     // Save the ROM file on disk
     rm.save_to_file(output_rom.as_str())
         .expect("Failed to save ROM file.");
+
+     // Se richiesto, salva la preview PNG
+    if let Some(preview_path) = &args.preview {
+        save_bytepusher_preview_png(&image, preview_path)
+            .expect("Failed to save preview PNG");
+    }
+
+
+}
+
+/// Salva una preview PNG a partire dal buffer BytePusher (256x256, palette 216 colori)
+fn save_bytepusher_preview_png(data: &[u8], path: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let palette = rustedbytes_bytepusher_rombuilder::image::build_palette();
+    let mut img = RgbImage::new(256, 256);
+    for (i, &idx) in data.iter().enumerate() {
+        let x = (i % 256) as u32;
+        let y = (i / 256) as u32;
+        img.put_pixel(x, y, palette[idx as usize]);
+    }
+    img.save(path)?;
+
+    Ok(())
 }
