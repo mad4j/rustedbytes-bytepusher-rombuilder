@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::Write;
+use std::ops::Range;
 
 pub struct RomBuilder {
     rom: Vec<u8>,
@@ -15,22 +16,6 @@ impl RomBuilder {
             program_counter: 0,
             inc_table_addr: None,
         }
-    }
-
-    pub fn install_inc_table(&mut self, base_addr: usize) -> &mut Self {
-        self.inc_table_addr = Some(base_addr);
-        self.org(base_addr);
-        for x in 0..256 {
-            self.write_u8(((x + 1) % 256) as u8);
-        }
-        self
-    }
-
-    pub fn inc(&mut self, addr: usize) -> &mut Self {
-        let inc_table_addr = self
-            .inc_table_addr
-            .expect("Please install the increment table first using install_inc_table().");
-        self.cpy(inc_table_addr + (addr & 0xFF), addr)
     }
 
     pub fn save_to_file(&self, filename: &str) -> std::io::Result<()> {
@@ -96,57 +81,47 @@ impl RomBuilder {
             .write_u16((audio_addr >> 8) as u16)
     }
 
-    pub fn org(&mut self, addr: usize) -> &mut Self {
-        self.program_counter = addr;
+
+    pub fn install_inc_table(&mut self, base_addr: usize) -> &mut Self {
+        self.inc_table_addr = Some(base_addr);
+        self.org(base_addr);
+        for x in 0..256 {
+            self.write_u8(((x + 1) % 256) as u8);
+        }
         self
     }
 
-    pub fn bbj(&mut self, source: usize, target: usize, jump: usize) -> &mut Self {
-        self.write_u24(source as u32)
-            .write_u24(target as u32)
-            .write_u24(jump as u32)
+    pub fn get_inc_table_addr(&self) -> Option<usize> {
+        self.inc_table_addr
     }
+}
 
-    /// No operation
-    pub fn nop(&mut self) {
-        self.write_u24(0x000000);
-        self.write_u24(0x000000);
-        let next_addr = self.get_next_addr() as u32;
-        self.write_u24(next_addr);
+// Implement Index and IndexMut traits for RomBuilder at module scope
+
+impl std::ops::Index<usize> for RomBuilder {
+    type Output = u8;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.rom[index]
     }
+}
 
-    /// Wait until next frame
-    /// This is used to synchronize with the frame rate of the game
-    /// Program counter needs to be programmed before calling this function
-    pub fn wait(&mut self) -> &mut Self {
-        self.write_u24(0x000000);
-        self.write_u24(0x000000);
-        let next_addr = self.get_current_addr() as u32;
-        self.write_u24(next_addr);
-        self
+impl std::ops::IndexMut<usize> for RomBuilder {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.rom[index]
     }
+}
 
-    /// Unconditional jump to provided address
-    pub fn jmp(&mut self, addr: usize) -> &mut Self {
-        self.write_u24(0x000000)
-            .write_u24(0x000000)
-            .write_u24(addr as u32)
+impl std::ops::Index<Range<usize>> for RomBuilder {
+    type Output = [u8];
+
+    fn index(&self, index: Range<usize>) -> &Self::Output {
+        &self.rom[index]
     }
+}
 
-    pub fn cpy(&mut self, source: usize, target: usize) -> &mut Self {
-        let next_addr = self.get_next_addr() as u32;
-        self.write_u24(source as u32)
-            .write_u24(target as u32)
-            .write_u24(next_addr)
-    }
-
-    pub fn db(&mut self, data: &[u8]) -> &mut Self {
-        self.rom[self.program_counter..self.program_counter + data.len()].copy_from_slice(data);
-        self.program_counter += data.len();
-        self
-    }
-
-    pub fn dbb(&mut self, data: u8) -> &mut Self {
-        self.write_u8(data)
+impl std::ops::IndexMut<Range<usize>> for RomBuilder {
+    fn index_mut(&mut self, index: Range<usize>) -> &mut Self::Output {
+        &mut self.rom[index]
     }
 }
