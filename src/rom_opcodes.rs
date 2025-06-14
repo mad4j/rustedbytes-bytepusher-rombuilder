@@ -62,5 +62,4 @@ impl RomBuilder {
             .expect("Please install the increment table first using install_inc_table().");
         self.cpy(inc_table_addr + (addr & 0xFF), addr)
     }
-
 }

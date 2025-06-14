@@ -81,7 +81,6 @@ impl RomBuilder {
             .write_u16((audio_addr >> 8) as u16)
     }
 
-
     pub fn install_inc_table(&mut self, base_addr: usize) -> &mut Self {
         self.inc_table_addr = Some(base_addr);
         self.org(base_addr);

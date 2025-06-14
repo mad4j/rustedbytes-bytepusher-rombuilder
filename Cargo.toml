@@ -11,3 +11,7 @@ rand = "0.9.1"
 [[bin]]
 name = "rom-random"
 path = "src/bin/rom-random.rs"
+
+[[bin]]
+name = "rom-image-evy"
+path = "src/bin/rom-image-evy.rs"
