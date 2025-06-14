@@ -44,7 +44,7 @@ fn main() {
     // No sound dummy samples
     rm.org(AUDIO_START).db(&[0; 256]);
 
-    // Generate random pixels
+    // Add image data
     rm.org(SCREEN_START).db(&image);
 
     // Determine output ROM file name
