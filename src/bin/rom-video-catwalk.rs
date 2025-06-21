@@ -19,11 +19,12 @@ fn main() {
     // Initialize registers
     rm.init_regs(0x0000, PROGRAM_START, SCREEN_START, AUDIO_START);
 
-    // ROM logic
+    // install kernel tables
     rm.org(KERNEL_START);
     rm.install_id_table();
     rm.install_inc_table();
 
+    // ROM logic
     rm.org(PROGRAM_START);
     for _ in 1..frame_count {
         rm.sync().sync().sync().sync().inc(SCREEN_REGISTER_ADDR);
