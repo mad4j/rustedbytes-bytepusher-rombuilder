@@ -26,8 +26,10 @@ fn main() {
 
     rm.org(PROGRAM_START);
     for _ in 1..frame_count {
-        rm.inc(SCREEN_REGISTER_ADDR).sync().sync().sync().sync();
+        rm.sync().sync().sync().sync().inc(SCREEN_REGISTER_ADDR);
     }
+    rm.cpyi(0x01, SCREEN_REGISTER_ADDR);
+    rm.jmp(PROGRAM_START);
 
     // No sound dummy samples
     rm.org(AUDIO_START).db_arr(&[0; 256]);
