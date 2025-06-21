@@ -20,3 +20,7 @@ path = "src/bin/rom-imageconv.rs"
 [[bin]]
 name = "rom-image-evy"
 path = "src/bin/rom-image-evy.rs"
+
+[[bin]]
+name = "rom-video-catwalk"
+path = "src/bin/rom-video-catwalk.rs"

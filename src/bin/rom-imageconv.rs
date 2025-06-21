@@ -33,7 +33,7 @@ fn main() {
     const SCREEN_START: usize = 0x010000;
 
     let image = convert_image_dithered_strength(&args.image, args.dithering)
-        .expect("Failed to load image file.");
+        .expect("Failed to load image file");
 
     // Initialize registers
     rm.init_regs(0x0000, PROGRAM_START, SCREEN_START, AUDIO_START);
@@ -42,10 +42,10 @@ fn main() {
     rm.org(PROGRAM_START).wait();
 
     // No sound dummy samples
-    rm.org(AUDIO_START).db(&[0; 256]);
+    rm.org(AUDIO_START).db_arr(&[0; 256]);
 
     // Add image data
-    rm.org(SCREEN_START).db(&image);
+    rm.org(SCREEN_START).db_arr(&image);
 
     // Determine output ROM file name
     let output_rom = match &args.output {
@@ -62,15 +62,12 @@ fn main() {
 
     // Save the ROM file on disk
     rm.save_to_file(output_rom.as_str())
-        .expect("Failed to save ROM file.");
+        .expect("Failed to save ROM file");
 
-     // Se richiesto, salva la preview PNG
+    // Se richiesto, salva la preview PNG
     if let Some(preview_path) = &args.preview {
-        save_bytepusher_preview_png(&image, preview_path)
-            .expect("Failed to save preview PNG");
+        save_bytepusher_preview_png(&image, preview_path).expect("Failed to save preview PNG");
     }
-
-
 }
 
 /// Salva una preview PNG a partire dal buffer BytePusher (256x256, palette 216 colori)

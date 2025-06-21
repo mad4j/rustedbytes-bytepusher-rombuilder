@@ -211,6 +211,8 @@ fn process_single_image(
     frame_index: usize,
     palette: &[[u8; 3]],
 ) -> Result<ProcessedFrame, BytePusherError> {
+    println!("Processing {:?}:{}", image_path, frame_index);
+
     let img = image::open(image_path)?;
     let dithered = apply_floyd_steinberg_dither(&img, palette, frame_index);
 
@@ -221,6 +223,17 @@ fn process_single_image(
         .and_then(|n| n.to_str())
         .unwrap_or("")
         .to_string();
+
+    let mut indexed_data = Vec::with_capacity((width * height) as usize);
+    for chunk in rgb_data.chunks(3) {
+        let rgb = [chunk[0], chunk[1], chunk[2]];
+        // Trova l'indice del colore più vicino nella palette
+        let idx = palette.iter().position(|&c| c == rgb).unwrap_or(0) as u8;
+        indexed_data.push(idx);
+    }
+    let rgb_data = indexed_data;
+
+    println!("Processed {} bytes", rgb_data.len());
 
     Ok(ProcessedFrame {
         rgb_data,

@@ -14,12 +14,12 @@ fn main() {
     rm.org(PROGRAM_START).wait();
 
     // No sound dummy samples
-    rm.org(AUDIO_START).db(&[0; 256]);
+    rm.org(AUDIO_START).db_arr(&[0; 256]);
 
     // Generate random pixels
     rm.org(SCREEN_START);
     for _ in 0..65536 {
-        rm.dbb(rand::random::<u8>() % 217);
+        rm.db(rand::random::<u8>() % 217);
     }
 
     // Save the ROM file on disk

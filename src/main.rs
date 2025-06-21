@@ -13,10 +13,10 @@ fn main() {
 
     // No sound dummy samples
     rm.org(AUDIO_START);
-    rm.db(&[0; 256]);
+    rm.db_arr(&[0; 256]);
 
     rm.org(SCREEN_START);
     for _ in 0..65536 {
-        rm.db(&[rand::random::<u8>() % 217]);
+        rm.db_arr(&[rand::random::<u8>() % 217]);
     }
 }
