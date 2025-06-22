@@ -1,1 +1,2 @@
 wsl ffmpeg -i input.mp4 -t 10 -vf "scale=256:256:force_original_aspect_ratio=increase,crop=256:256,fps=15" -pix_fmt rgb24 -compression_level 6 -start_number 1 -y frame_%06d.png
+wsl ffmpeg -r 15 -i frame_%06d.png -c:v libx264 -pix_fmt yuv420p -preset medium -y reassembled.mp4
