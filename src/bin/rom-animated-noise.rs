@@ -1,12 +1,28 @@
+/*
+ * Animated Random Noise ROM for BytePusher VM
+ * 
+ * This ROM demonstrates animated random noise patterns using a pseudo-random
+ * number generator. The screen continuously cycles through 4 pre-generated
+ * frames of random noise, creating an animated effect.
+ * 
+ * Technical details:
+ * - 4 frames of 256x256 pixels (65,536 bytes each)
+ * - Linear Congruential Generator (LCG) for random number generation
+ * - Animation loop at ~3.75 FPS (4 sync operations per frame)
+ * - Frame counter at 0x000010 for performance measurement
+ * - Total ROM size: ~320KB
+ */
+
 use rustedbytes_bytepusher_rombuilder::rom_builder::{RomBuilder, SCREEN_REGISTER_ADDR};
 
 fn main() {
     let mut rm = RomBuilder::new();
 
-    const KERNEL_START: usize = 0x000100;
-    const PROGRAM_START: usize = 0x000300;
-    const AUDIO_START: usize = 0x00FF00;
-    const SCREEN_START: usize = 0x010000;
+    // Memory layout
+    const KERNEL_START: usize = 0x000100;    // Kernel tables (ID and INC)
+    const PROGRAM_START: usize = 0x000300;   // Animation loop code
+    const AUDIO_START: usize = 0x00FF00;     // Audio samples
+    const SCREEN_START: usize = 0x010000;    // Frame data
     
     // Counter for frame rate measurement (24-bit counter)
     const FRAME_COUNTER_ADDR: usize = 0x000010;
@@ -24,6 +40,8 @@ fn main() {
     rm.install_inc_table();
 
     // ROM logic - Animation loop
+    // This loop cycles through 4 frames, waiting 4 sync periods between each frame
+    // to achieve a slower, more visible animation speed
     rm.org(PROGRAM_START);
     
     // Generate 4 different frames of random noise at compile time
@@ -54,6 +72,7 @@ fn main() {
     rm.org(AUDIO_START).db_arr(&[0; 256]);
 
     // Generate random noise frames
+    // Uses different seeds for each frame to ensure variety
     rm.org(SCREEN_START);
     for frame in 0..NUM_FRAMES {
         // Use different seed for each frame to ensure variety
@@ -61,6 +80,7 @@ fn main() {
         
         for _ in 0..65536 {
             // Simple but effective LCG (Linear Congruential Generator)
+            // Constants from Numerical Recipes: a=1103515245, c=12345
             seed = seed.wrapping_mul(1103515245).wrapping_add(12345);
             let random_value = ((seed >> 16) & 0xFF) as u8;
             
