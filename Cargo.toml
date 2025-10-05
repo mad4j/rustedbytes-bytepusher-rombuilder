@@ -28,3 +28,7 @@ path = "src/bin/rom-video-catwalk.rs"
 [[bin]]
 name = "rom-animated-noise"
 path = "src/bin/rom-animated-noise.rs"
+
+[[bin]]
+name = "rom-trunner"
+path = "src/bin/rom-trunner.rs"
