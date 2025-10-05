@@ -31,6 +31,55 @@ const COLOR_GROUND: u8 = 108;     // Medium gray (3,0,0)
 const COLOR_PLAYER: u8 = 36;      // Dark gray (1,0,0)
 const COLOR_OBSTACLE: u8 = 72;    // Darker gray (2,0,0)
 
+// T-Rex sprite data (20x20 pixels)
+// 0 = transparent (sky), 1 = dark gray (body)
+const TREX_SPRITE_1: [[u8; 20]; 20] = [
+    [0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+
+// T-Rex sprite with leg position 2 (running animation)
+const TREX_SPRITE_2: [[u8; 20]; 20] = [
+    [0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+
 fn main() {
     let mut rm = RomBuilder::new();
 
@@ -94,6 +143,13 @@ fn generate_frame(rm: &mut RomBuilder, frame_idx: usize, obstacle_x: usize) {
     const PLAYER_SIZE: usize = 20;
     const OBSTACLE_SIZE: usize = 20;
     
+    // Select T-Rex sprite based on frame (alternating for running animation)
+    let trex_sprite = if frame_idx % 2 == 0 {
+        &TREX_SPRITE_1
+    } else {
+        &TREX_SPRITE_2
+    };
+    
     for y in 0..256 {
         for x in 0..256 {
             let mut color = COLOR_SKY;
@@ -108,18 +164,19 @@ fn generate_frame(rm: &mut RomBuilder, frame_idx: usize, obstacle_x: usize) {
                 color = COLOR_PLAYER;
             }
             
-            // Draw player (simple rectangle)
+            // Draw T-Rex sprite
             if x >= PLAYER_X && x < PLAYER_X + PLAYER_SIZE &&
                y >= PLAYER_Y && y < PLAYER_Y + PLAYER_SIZE {
-                color = COLOR_PLAYER;
+                let sprite_x = x - PLAYER_X;
+                let sprite_y = y - PLAYER_Y;
                 
-                // Add simple animation - alternating pattern based on frame
-                if (frame_idx % 2 == 0 && x % 4 < 2) || (frame_idx % 2 == 1 && y % 4 < 2) {
-                    color = COLOR_OBSTACLE;
+                // Get pixel from sprite (1 = draw, 0 = transparent)
+                if trex_sprite[sprite_y][sprite_x] == 1 {
+                    color = COLOR_PLAYER;
                 }
             }
             
-            // Draw obstacle (simple rectangle)
+            // Draw obstacle (simple cactus rectangle)
             if obstacle_x < 256 && x >= obstacle_x && x < obstacle_x + OBSTACLE_SIZE &&
                y >= GROUND_Y - OBSTACLE_SIZE && y < GROUND_Y {
                 color = COLOR_OBSTACLE;
