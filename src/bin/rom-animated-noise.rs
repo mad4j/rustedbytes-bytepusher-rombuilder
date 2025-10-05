@@ -9,7 +9,6 @@
  * - 4 frames of 256x256 pixels (65,536 bytes each)
  * - Linear Congruential Generator (LCG) for random number generation
  * - Animation loop at ~3.75 FPS (4 sync operations per frame)
- * - Frame counter at 0x000010 for performance measurement
  * - Total ROM size: ~320KB
  */
 
@@ -24,15 +23,8 @@ fn main() {
     const AUDIO_START: usize = 0x00FF00;     // Audio samples
     const SCREEN_START: usize = 0x010000;    // Frame data
     
-    // Counter for frame rate measurement (24-bit counter)
-    const FRAME_COUNTER_ADDR: usize = 0x000010;
-    
     // Initialize registers
     rm.init_regs(0x0000, PROGRAM_START, SCREEN_START, AUDIO_START);
-
-    // Initialize frame counter to 0
-    rm.org(FRAME_COUNTER_ADDR);
-    rm.db_arr(&[0, 0, 0]);
 
     // Install kernel tables
     rm.org(KERNEL_START);
@@ -61,9 +53,6 @@ fn main() {
         // Set screen register to point to this frame (only write high byte)
         // Screen register is 1 byte at 0x000005, we must not overwrite audio register at 0x000006
         rm.cpyi((frame_addr >> 16) as u8, SCREEN_REGISTER_ADDR);
-        
-        // Increment frame counter
-        rm.inc(FRAME_COUNTER_ADDR + 2); // Increment low byte
     }
     
     // Jump back to start of animation loop
@@ -100,7 +89,4 @@ fn main() {
     println!("Number of frames: {}", NUM_FRAMES);
     println!("Frame size: 256x256 pixels = 65536 bytes");
     println!("Expected frame rate: ~60 FPS / 16 syncs = ~3.75 FPS (4 syncs per frame × 4 frames)");
-    println!("");
-    println!("Frame counter is at address 0x{:06X}", FRAME_COUNTER_ADDR);
-    println!("Monitor this address to verify actual frame rate!");
 }
