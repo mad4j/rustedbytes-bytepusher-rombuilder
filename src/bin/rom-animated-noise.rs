@@ -58,8 +58,9 @@ fn main() {
             rm.sync();
         }
         
-        // Set screen register to point to this frame
-        rm.cpyi_addr(frame_addr, SCREEN_REGISTER_ADDR);
+        // Set screen register to point to this frame (only write high byte)
+        // Screen register is 1 byte at 0x000005, we must not overwrite audio register at 0x000006
+        rm.cpyi((frame_addr >> 16) as u8, SCREEN_REGISTER_ADDR);
         
         // Increment frame counter
         rm.inc(FRAME_COUNTER_ADDR + 2); // Increment low byte
