@@ -24,3 +24,7 @@ path = "src/bin/rom-image-evy.rs"
 [[bin]]
 name = "rom-video-catwalk"
 path = "src/bin/rom-video-catwalk.rs"
+
+[[bin]]
+name = "rom-animated-noise"
+path = "src/bin/rom-animated-noise.rs"

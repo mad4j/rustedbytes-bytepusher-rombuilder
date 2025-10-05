@@ -13,3 +13,9 @@ BytePusher VM ROM Builder
 
 ## Lenna Image ROM
 [![Random](screenshot_0004.png)](roms/Lenna.BytePusher)
+
+## Animated Random Noise ROM
+[![Animated Noise](screenshot_0005.png)](roms/AnimatedNoise.BytePusher)
+
+This ROM demonstrates animated random noise patterns. The screen updates continuously with pseudo-random patterns across 4 different frames. The animation loops at approximately 3.75 FPS (4 sync operations per frame). A frame counter is maintained at memory address 0x000010 for frame rate verification.
+
